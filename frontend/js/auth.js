@@ -84,7 +84,7 @@ async function handleRegister(event) {
 
 async function handleLogout() {
     try {
-        const response = await AppUtils.apiRequest(`${API_BASE}/api/auth/logout`, {
+        const response = await AppUtils.apiRequest('/api/auth/logout', {
             method: 'POST'
         });
         
@@ -108,12 +108,10 @@ async function handleLogout() {
 
 // Auto-login check
 async function checkAutoLogin() {
-    if (!AppUtils.isAuthenticated()) {
-        return false;
-    }
+    // Relying on backend profile endpoint for authentication check
     
     try {
-        const response = await AppUtils.apiRequest(`${API_BASE}/api/auth/profile`);
+        const response = await AppUtils.apiRequest('/api/auth/profile');
         
         if (response.success) {
             AppUtils.setLocalData('user', response.user);

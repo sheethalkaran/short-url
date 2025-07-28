@@ -129,10 +129,6 @@ async function apiRequest(endpoint, options = {}) {
 }
 
 // Authentication helpers
-function isAuthenticated() {
-    return document.cookie.includes('authToken');
-}
-
 function redirectToLogin() {
     window.location.href = '/login.html';
 }
@@ -141,27 +137,9 @@ function redirectToDashboard() {
     window.location.href = '/dashboard.html';
 }
 
-// Check authentication on protected pages
-function checkAuth() {
-    const protectedPages = ['/dashboard.html'];
-    const currentPath = window.location.pathname;
-    
-    if (protectedPages.some(page => currentPath.includes(page))) {
-        if (!isAuthenticated()) {
-            showNotification('Please login to access this page', 'error');
-            setTimeout(() => redirectToLogin(), 2000);
-            return false;
-        }
-    }
-    
-    return true;
-}
-
 // Initialize app
 document.addEventListener('DOMContentLoaded', () => {
     console.log('App initialized');
-    checkAuth();
-    
     // Add notification styles if not present
     if (!document.querySelector('#notification-styles')) {
         const styles = document.createElement('style');
@@ -412,7 +390,6 @@ window.AppUtils = {
     showNotification,
     showLoading,
     apiRequest,
-    isAuthenticated,
     redirectToLogin,
     redirectToDashboard,
     copyToClipboard,
@@ -423,5 +400,9 @@ window.AppUtils = {
     getLocalData,
     removeLocalData,
     debounce,
-    throttle
+    throttle,
+    // Legacy support: checks if user is in localStorage
+    isAuthenticated: function() {
+        return !!window.localStorage.getItem('user');
+    }
 };

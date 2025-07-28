@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 // Load user profile
 async function loadUserProfile() {
     try {
-        const response = await AppUtils.apiRequest(`${API_BASE}/api/auth/profile`);
+        const response = await AppUtils.apiRequest('/api/auth/profile');
         
         if (response.success) {
             const usernameElement = document.getElementById('username');
@@ -73,7 +73,7 @@ async function handleCreateUrl(event) {
         if (customCode) requestBody.customCode = customCode;
         if (expiresAt) requestBody.expiresAt = expiresAt;
         
-        const response = await AppUtils.apiRequest(`${API_BASE}/api/url/shorten`, {
+        const response = await AppUtils.apiRequest('/api/url/shorten', {
             method: 'POST',
             body: JSON.stringify(requestBody)
         });
@@ -138,7 +138,7 @@ async function loadUrls(page = 1) {
     }
     
     try {
-        const response = await AppUtils.apiRequest(`${API_BASE}/api/url/my-urls?page=${page}&limit=10`);
+        const response = await AppUtils.apiRequest(`/api/url/my-urls?page=${page}&limit=10`);
         
         if (response.success) {
             currentPage = page;
@@ -242,7 +242,7 @@ async function copyUrlToClipboard(url) {
 // Show URL statistics
 async function showUrlStats(shortCode) {
     try {
-        const response = await AppUtils.apiRequest(`${API_BASE}/api/url/stats/${shortCode}`);
+        const response = await AppUtils.apiRequest(`/api/url/stats/${shortCode}`);
         
         if (response.success) {
             const url = response.data;
@@ -314,7 +314,7 @@ async function deleteUrl(shortCode) {
     }
     
     try {
-        const response = await AppUtils.apiRequest(`${API_BASE}/api/url/${shortCode}`, {
+        const response = await AppUtils.apiRequest(`/api/url/${shortCode}`, {
             method: 'DELETE'
         });
         
