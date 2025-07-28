@@ -43,7 +43,17 @@ async function handleCreateUrl(event) {
     const formData = new FormData(form);
     const longUrl = formData.get('longUrl').trim();
     const customCode = formData.get('customCode').trim();
-    const expiresAt = formData.get('expiresAt');
+    let expiresAt = formData.get('expiresAt');
+    // Convert datetime-local to ISO string if present
+    if (expiresAt) {
+        // If expiresAt is not empty, convert to ISO string (local time to UTC)
+        const dt = new Date(expiresAt);
+        if (!isNaN(dt.getTime())) {
+            expiresAt = dt.toISOString();
+        } else {
+            expiresAt = '';
+        }
+    }
     
     // Validate URL
     const urlError = AppUtils.validateUrl(longUrl);
@@ -77,20 +87,24 @@ async function handleCreateUrl(event) {
             method: 'POST',
             body: JSON.stringify(requestBody)
         });
-        
+
         if (response.success) {
             AppUtils.showNotification('URL created successfully!', 'success');
-            
+
             // Reset form
             form.reset();
-            
+
             // Reload URLs list
             await loadUrls();
-            
+
             // Show result
             showUrlCreated(response.data);
+        } else {
+            // Show error popup if custom code is taken or any error
+            AppUtils.showNotification(response.message || 'Failed to create URL', 'error');
         }
     } catch (error) {
+        // Show error popup if custom code is taken or any error
         AppUtils.handleError(error, 'create URL');
     } finally {
         submitBtn.disabled = false;
@@ -156,6 +170,7 @@ async function loadUrls(page = 1) {
 }
 
 // Render URLs list
+// Note: Click counts update only after reload or after calling loadUrls().
 function renderUrls(urls) {
     const container = document.getElementById('urlsContainer');
     
@@ -179,7 +194,7 @@ function renderUrls(urls) {
                     ${url.longUrl.length > 60 ? url.longUrl.substring(0, 60) + '...' : url.longUrl}
                 </div>
                 <div class="url-short">
-                    <a href="${url.shortUrl}" target="_blank">${url.shortUrl}</a>
+                    <a href="#" onclick="handleShortUrlClick('${url.shortUrl}', event)" target="_blank">${url.shortUrl}</a>
                 </div>
                 <div class="url-meta">
                     <span>Created: ${AppUtils.formatDate(url.createdAt)}</span>
@@ -499,3 +514,11 @@ const additionalStyles = `
 
 // Inject additional styles
 document.head.insertAdjacentHTML('beforeend', additionalStyles);
+
+// Add this at the bottom of dashboard.js
+window.handleShortUrlClick = async function(shortUrl, event) {
+    event.preventDefault();
+    window.open(shortUrl, '_blank');
+    // Wait a moment for backend to process click, then reload URLs
+    setTimeout(() => loadUrls(currentPage), 1000);
+};

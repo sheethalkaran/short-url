@@ -87,13 +87,10 @@ async function handleLogout() {
         const response = await AppUtils.apiRequest('/api/auth/logout', {
             method: 'POST'
         });
-        
         if (response.success) {
             // Clear local data
             AppUtils.removeLocalData('user');
-            
             AppUtils.showNotification('Logged out successfully', 'success');
-            
             // Redirect to home page
             setTimeout(() => {
                 window.location.href = '/index.html';
@@ -105,6 +102,9 @@ async function handleLogout() {
         window.location.href = '/index.html';
     }
 }
+
+// Expose handleLogout globally for dashboard.html
+window.handleLogout = handleLogout;
 
 // Auto-login check
 async function checkAutoLogin() {
@@ -143,4 +143,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     if (loginBtn) loginBtn.id = 'loginBtn';
     if (registerBtn) registerBtn.id = 'registerBtn';
+    
+    // Expose handleLogout globally for dashboard.html (in case script order causes issues)
+    window.handleLogout = handleLogout;
 });

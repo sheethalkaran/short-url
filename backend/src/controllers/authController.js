@@ -143,14 +143,16 @@ const login = async (req, res) => {
 
 const logout = async (req, res) => {
   try {
-    const token = req.token;
-    
-    // Remove session from Redis
-    await redisClient.deleteSession(token);
-    
+    // Try to get token from req.token (middleware) or from cookie directly
+    let token = req.token;
+    if (!token && req.cookies && req.cookies.authToken) {
+      token = req.cookies.authToken;
+    }
+    if (token) {
+      await redisClient.deleteSession(token);
+    }
     // Clear cookie
     res.clearCookie('authToken');
-    
     res.json({
       success: true,
       message: 'Logout successful'

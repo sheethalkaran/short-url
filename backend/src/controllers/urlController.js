@@ -82,6 +82,27 @@ const shortenUrl = async (req, res) => {
       });
     }
 
+    // Validate customCode if provided
+    if (customCode && !/^[a-zA-Z0-9_-]{3,20}$/.test(customCode)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Custom code must be 3-20 chars, letters, numbers, hyphens, underscores only.'
+      });
+    }
+
+    // Validate expiresAt if provided
+    let expiresAtDate = null;
+    if (expiresAt) {
+      const date = new Date(expiresAt);
+      if (isNaN(date.getTime())) {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid expiration date format.'
+        });
+      }
+      expiresAtDate = date;
+    }
+
     // Check if user already has this URL shortened
     const existingUrl = await Url.findOne({ 
       userId, 
@@ -140,7 +161,7 @@ const shortenUrl = async (req, res) => {
       shortCode,
       customCode: customCode || null,
       userId,
-      expiresAt: expiresAt ? new Date(expiresAt) : null
+      expiresAt: expiresAtDate
     });
 
     await newUrl.save();
