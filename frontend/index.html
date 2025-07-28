@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URL Shortener - Fast & Secure</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="logo">
+                <h1>🔗 ShortLink</h1>
+            </div>
+            <nav class="nav">
+                <a href="login.html" class="btn btn-outline">Login</a>
+                <a href="login.html#register" class="btn btn-primary">Sign Up</a>
+            </nav>
+        </header>
+
+        <main class="main">
+            <section class="hero">
+                <h1 class="hero-title">Shorten Your URLs with Style</h1>
+                <p class="hero-subtitle">
+                    Create short, memorable links that are perfect for sharing. 
+                    Track clicks, customize URLs, and manage everything in one place.
+                </p>
+                
+                <div class="url-shortener">
+                    <div class="input-group">
+                        <input 
+                            type="url" 
+                            id="longUrl" 
+                            placeholder="Paste your long URL here..." 
+                            class="url-input"
+                            required
+                        >
+                        <button id="shortenBtn" onclick="quickShorten()" class="btn btn-primary btn-large">
+                            Shorten URL
+                        </button>
+                    </div>
+                    
+                    <div id="result" class="result-container" style="display: none;">
+                        <div class="result-box">
+                            <div class="result-url">
+                                <input type="text" id="shortUrl" readonly class="short-url-input">
+                                <button onclick="copyToClipboard()" class="btn btn-outline btn-small">
+                                    📋 Copy
+                                </button>
+                            </div>
+                            <p class="result-note">
+                                ⚠️ This is a temporary link (expires in 24 hours). <a href="login.html">Sign up</a> to save and manage your URLs!
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="features">
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">📊</div>
+                        <h3>Click Analytics</h3>
+                        <p>Track every click with detailed analytics and insights.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🎨</div>
+                        <h3>Custom URLs</h3>
+                        <p>Create branded short links with custom aliases.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">⚡</div>
+                        <h3>Lightning Fast</h3>
+                        <p>Optimized for speed with Redis caching technology.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🔒</div>
+                        <h3>Secure & Private</h3>
+                        <p>Your data is protected with enterprise-grade security.</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <p>&copy; 2025 ShortLink. Built with ❤️ for developers.</p>
+        </footer>
+    </div>
+
+    <div id="notification" class="notification"></div>
+
+    <script src="js/app.js"></script>
+    <script>
+        // Quick shorten for guest users (temporary URLs)
+        async function quickShorten() {
+            const longUrlInput = document.getElementById('longUrl');
+            const longUrl = longUrlInput.value.trim();
+            
+            if (!longUrl) {
+                AppUtils.showNotification('Please enter a URL', 'error');
+                longUrlInput.focus();
+                return;
+            }
+            
+            const urlError = AppUtils.validateUrl(longUrl);
+            if (urlError) {
+                AppUtils.showNotification(urlError, 'error');
+                longUrlInput.focus();
+                return;
+            }
+            
+            try {
+                AppUtils.showLoading('shortenBtn', true);
+                
+                const response = await AppUtils.apiRequest('/api/url/guest-shorten', {
+                    method: 'POST',
+                    body: JSON.stringify({ longUrl })
+                });
+                
+                if (response.success) {
+                    document.getElementById('shortUrl').value = response.data.shortUrl;
+                    document.getElementById('result').style.display = 'block';
+                    AppUtils.showNotification('URL shortened successfully!', 'success');
+                    
+                    // Clear the input
+                    longUrlInput.value = '';
+                    
+                    // Scroll to result
+                    document.getElementById('result').scrollIntoView({ 
+                        behavior: 'smooth', 
+                        block: 'center' 
+                    });
+                } else {
+                    AppUtils.showNotification(response.message || 'Failed to shorten URL', 'error');
+                }
+            } catch (error) {
+                console.error('Quick shorten error:', error);
+                AppUtils.handleError(error, 'guest URL shortening');
+            } finally {
+                AppUtils.showLoading('shortenBtn', false);
+            }
+        }
+
+        function copyToClipboard() {
+            const shortUrlInput = document.getElementById('shortUrl');
+            if (shortUrlInput && shortUrlInput.value) {
+                AppUtils.copyToClipboard(shortUrlInput.value);
+            }
+        }
+
+        // Handle Enter key in URL input
+        document.getElementById('longUrl').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                quickShorten();
+            }
+        });
+
+        // Auto-focus URL input on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('longUrl').focus();
+        });
+
+        // Hide result when user starts typing a new URL
+        document.getElementById('longUrl').addEventListener('input', function() {
+            const resultDiv = document.getElementById('result');
+            if (resultDiv.style.display !== 'none' && this.value.trim() !== '') {
+                resultDiv.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

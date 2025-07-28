@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - URL Shortener</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
+</head>
+<body>
+    <div class="dashboard-container">
+        <header class="dashboard-header">
+            <div class="header-content">
+                <a href="index.html" class="logo">🔗 ShortLink</a>
+                <div class="user-menu">
+                    <span id="username" class="username"></span>
+                    <button onclick="handleLogout()" class="btn btn-outline btn-small">
+                        Logout
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <main class="dashboard-main">
+            <section class="url-creation">
+                <div class="section-header">
+                    <h2>Create Short URL</h2>
+                </div>
+                
+                <form onsubmit="handleCreateUrl(event)" class="url-form">
+                    <div class="form-row">
+                        <div class="form-group flex-grow">
+                            <label for="longUrl">Long URL</label>
+                            <input 
+                                type="url" 
+                                id="longUrl" 
+                                name="longUrl" 
+                                required 
+                                class="form-input"
+                                placeholder="https://example.com/very-long-url..."
+                            >
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="customCode">Custom Code (Optional)</label>
+                            <input 
+                                type="text" 
+                                id="customCode" 
+                                name="customCode" 
+                                class="form-input"
+                                placeholder="my-custom-link"
+                                pattern="[a-zA-Z0-9_-]+"
+                                title="Only letters, numbers, hyphens, and underscores allowed"
+                            >
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="expiresAt">Expires At (Optional)</label>
+                            <input 
+                                type="datetime-local" 
+                                id="expiresAt" 
+                                name="expiresAt" 
+                                class="form-input"
+                            >
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">
+                        Create Short URL
+                    </button>
+                </form>
+            </section>
+
+            <section class="urls-list">
+                <div class="section-header">
+                    <h2>Your URLs</h2>
+                    <div class="list-controls">
+                        <button onclick="refreshUrls()" class="btn btn-outline btn-small">
+                            🔄 Refresh
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="urlsContainer" class="urls-container">
+                    <div class="loading">Loading your URLs...</div>
+                </div>
+                
+                <div id="pagination" class="pagination" style="display: none;">
+                    <button id="prevBtn" onclick="changePage(-1)" class="btn btn-outline btn-small">
+                        ← Previous
+                    </button>
+                    <span id="pageInfo" class="page-info"></span>
+                    <button id="nextBtn" onclick="changePage(1)" class="btn btn-outline btn-small">
+                        Next →
+                    </button>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- URL Details Modal -->
+    <div id="urlModal" class="modal" onclick="closeModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h3>URL Details</h3>
+                <button onclick="closeModal()" class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="urlDetails"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="notification" class="notification"></div>
+
+    <script src="js/app.js"></script>
+    <script src="js/dashboard.js"></script>
+</body>
+</html>
