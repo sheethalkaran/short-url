@@ -27,9 +27,10 @@ const createRateLimiter = (maxRequests = 100, windowInMinutes = 60) => {
 
 
 // Different rate limits for different endpoints (relaxed for development)
-const authRateLimit = createRateLimiter(100, 15); // 100 requests per 15 minutes
-const urlRateLimit = createRateLimiter(50, 60);  // 50 requests per hour
-const generalRateLimit = createRateLimiter(100, 60); // 100 requests per hour
+// For development, increase limits generously
+const authRateLimit = createRateLimiter(1000, 15); // 1000 requests per 15 minutes
+const urlRateLimit = createRateLimiter(500, 60);  // 500 requests per hour
+const generalRateLimit = createRateLimiter(1000, 60); // 1000 requests per hour
 
 module.exports = {
   authRateLimit,

@@ -235,7 +235,7 @@ body {
     text-align: center;
     box-shadow: var(--shadow);
     transition: var(--transition);
-    border: 1px solid var(--primary-color);
+    border: 2px solid var(--primary-color);
 }
 
 .feature-card:hover {

@@ -97,8 +97,14 @@ async function handleCreateUrl(event) {
             // Reload URLs list
             await loadUrls();
 
-            // Show result
+            // Show result in modal
             showUrlCreated(response.data);
+
+            // Also set short URL in main form
+            const shortUrlInput = document.getElementById('shortUrl');
+            if (shortUrlInput) {
+                shortUrlInput.value = response.data.shortUrl;
+            }
         } else {
             // Show error popup if custom code is taken or any error
             AppUtils.showNotification(response.message || 'Failed to create URL', 'error');
@@ -124,7 +130,7 @@ function showUrlCreated(urlData) {
                 <div class="url-display">
                     <input type="text" value="${urlData.shortUrl}" readonly class="short-url-input">
                     <button onclick="AppUtils.copyToClipboard('${urlData.shortUrl}')" class="btn btn-outline btn-small">
-                        📋 Copy
+                        COPY
                     </button>
                 </div>
             </div>
@@ -306,7 +312,7 @@ async function showUrlStats(shortCode) {
                             <div class="url-display">
                                 <input type="text" value="${url.shortUrl}" readonly class="short-url-input">
                                 <button onclick="AppUtils.copyToClipboard('${url.shortUrl}')" class="btn btn-outline btn-small">
-                                    📋 Copy
+                                    COPY
                                 </button>
                             </div>
                         </div>
