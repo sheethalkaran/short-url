@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   frontend:
     build:
@@ -71,7 +69,7 @@ services:
 networks:
   app-network:
     driver: bridge
-
+    
 volumes:
   mongo_data:
   redis_data:

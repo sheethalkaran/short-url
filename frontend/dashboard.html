@@ -38,7 +38,7 @@
                                 required 
                                 class="form-input"
                                 placeholder="https://example.com/very-long-url..."
-                            >
+                            <input type="text" id="shortUrl" readonly class="short-url-input" title="Short URL" placeholder="Your short URL will appear here" aria-label="Short URL">
                         </div>
                     </div>
                     
@@ -51,7 +51,7 @@
                                 name="customCode" 
                                 class="form-input"
                                 placeholder="my-custom-link"
-                                pattern="[a-zA-Z0-9_-]+"
+                                pattern="[a-zA-Z0-9_-]{3,}"
                                 title="Only letters, numbers, hyphens, and underscores allowed"
                             >
                         </div>

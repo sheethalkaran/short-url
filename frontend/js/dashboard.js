@@ -194,7 +194,7 @@ function renderUrls(urls) {
                     ${url.longUrl.length > 60 ? url.longUrl.substring(0, 60) + '...' : url.longUrl}
                 </div>
                 <div class="url-short">
-                    <a href="#" onclick="handleShortUrlClick('${url.shortUrl}', event)" target="_blank">${url.shortUrl}</a>
+                    <a href="#" onclick="handleShortUrlClick('${url.shortCode}', '${url.shortUrl}', event)" target="_blank">${url.shortUrl}</a>
                 </div>
                 <div class="url-meta">
                     <span>Created: ${AppUtils.formatDate(url.createdAt)}</span>
@@ -219,6 +219,21 @@ function renderUrls(urls) {
     `).join('');
     
     container.innerHTML = urlsHtml;
+
+    // Attach click handler globally if not already
+    if (!window.handleShortUrlClick) {
+        window.handleShortUrlClick = async function(shortCode, shortUrl, event) {
+            event.preventDefault();
+            window.open(shortUrl, '_blank');
+            try {
+                await AppUtils.apiRequest(`/api/url/click/${shortCode}`, { method: 'POST' });
+                // Update click count in UI
+                await loadUrls(currentPage);
+            } catch (error) {
+                AppUtils.handleError(error, 'register click');
+            }
+        };
+    }
 }
 
 // Update pagination
