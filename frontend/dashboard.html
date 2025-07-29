@@ -11,9 +11,9 @@
     <div class="dashboard-container">
         <header class="dashboard-header">
             <div class="header-content">
-                <a href="index.html" class="logo">🔗 ShortLink</a>
+                <a href="index.html" class="logo"><h1>🔗 ShortLink</h1></a>
                 <div class="user-menu">
-                    <span id="username" class="username"></span>
+                    <span id="username" class="username" style="font-size: 50px;"></span>
                     <button onclick="handleLogout()" class="btn btn-outline btn-small">
                         Logout
                     </button>
@@ -38,6 +38,7 @@
                                 required 
                                 class="form-input"
                                 placeholder="https://example.com/very-long-url..."
+                            >
                             <input type="text" id="shortUrl" readonly class="short-url-input" title="Short URL" placeholder="Your short URL will appear here" aria-label="Short URL">
                         </div>
                     </div>
@@ -78,7 +79,7 @@
                     <h2>Your URLs</h2>
                     <div class="list-controls">
                         <button onclick="refreshUrls()" class="btn btn-outline btn-small">
-                            🔄 Refresh
+                            REFRESH
                         </button>
                     </div>
                 </div>
